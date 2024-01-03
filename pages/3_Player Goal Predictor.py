@@ -1,6 +1,8 @@
 import base64
 import streamlit as st
 import pandas as pd
+import requests
+from io import BytesIO
 from joblib import load
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
@@ -124,17 +126,20 @@ st.title("Football Player Future Goals Prediction")
 
 # Load the model, preprocessor, and the new DataFrame with weighted goals
 # Cache the function for loading the model
-@st.cache_resource
-def load_model(path):
-    return load(path)
+@st.cache(allow_output_mutation=True)
+def load_model(url):
+    response = requests.get(url)
+    response.raise_for_status()  # Check if the request was successful
+    model_file = BytesIO(response.content)
+    return joblib.load(model_file)
 
 # Instead of using relative paths, specify the absolute path
-model_path = 'C:\\Users\\alfaa\\rf_best_model.joblib'
-preprocessor_path = 'C:\\Users\\alfaa\\preprocessor.joblib'
+model_url = 'https://raw.githubusercontent.com/lufttr/FYP/main/rf_best_model.joblib'
+preprocessor_url = 'https://raw.githubusercontent.com/lufttr/FYP/main/preprocessor.joblib'
 
 # Use the cached function to load the model and preprocessor
-model = load_model(model_path)
-preprocessor = load_model(preprocessor_path)
+model = load_model(model_url)
+preprocessor = load_model(preprocessor_url)
 df_with_weighted_goals = load_player_data()  # Assuming this function now returns the DataFrame with weighted goals
 
 @st.cache_data
