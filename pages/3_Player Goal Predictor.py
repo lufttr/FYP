@@ -1,6 +1,7 @@
 import base64
 import streamlit as st
 import pandas as pd
+import joblib
 import requests
 from io import BytesIO
 from joblib import load
